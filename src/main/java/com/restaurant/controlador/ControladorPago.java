@@ -1,0 +1,43 @@
+package com.restaurant.controlador;
+
+import com.restaurant.dto.RespuestaPagoDTO;
+import com.restaurant.dto.SolicitudPagoDTO;
+import com.restaurant.servicio.ServicioMesa;
+import com.restaurant.servicio.ServicioPago;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/pagos")
+@RequiredArgsConstructor
+public class ControladorPago {
+
+    private final ServicioPago servicioPago;
+    private final ServicioMesa servicioMesa;
+
+    @PostMapping("/mesa/{mesaId}")
+    public ResponseEntity<RespuestaPagoDTO> pagar(
+            @PathVariable Long mesaId,
+            @RequestHeader("X-Session-Token") String token,
+            @Valid @RequestBody SolicitudPagoDTO solicitud) {
+
+        servicioMesa.validarToken(mesaId, token);
+        return ResponseEntity.ok(servicioPago.procesarPago(mesaId, solicitud));
+    }
+
+    @PostMapping("/webhook")
+    public ResponseEntity<Void> webhook(
+            @RequestBody String payload,
+            @RequestHeader(value = "Stripe-Signature", required = false) String firma) {
+
+        servicioPago.manejarWebhook(payload, firma);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{pagoId}/confirmar")
+    public ResponseEntity<RespuestaPagoDTO> confirmarPagoQR(@PathVariable Long pagoId) {
+        return ResponseEntity.ok(servicioPago.confirmarPagoQR(pagoId));
+    }
+}
