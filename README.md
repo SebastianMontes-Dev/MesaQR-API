@@ -88,7 +88,7 @@ curl http://localhost:8080/api/mesas
 
 ### Mesas
 
-| Método | Endpoint | Descripción | Auth |
+| Método | Endpoint | Descripción | Autenticación |
 |--------|----------|-------------|------|
 | `POST` | `/api/mesas` | Crear una mesa | — |
 | `GET` | `/api/mesas` | Listar todas las mesas | — |
@@ -118,10 +118,10 @@ Respuesta `201`:
 
 ### Pedidos
 
-| Método | Endpoint | Descripción | Auth |
+| Método | Endpoint | Descripción | Autenticación |
 |--------|----------|-------------|------|
 | `POST` | `/api/pedidos/mesa/{mesaId}` | Abrir pedido para una mesa | `X-Session-Token` |
-| `POST` | `/api/pedidos/mesa/{mesaId}/items` | Agregar ítem al pedido | `X-Session-Token` |
+| `POST` | `/api/pedidos/mesa/{mesaId}/items` | Agregar elemento al pedido | `X-Session-Token` |
 | `GET` | `/api/pedidos/mesa/{mesaId}` | Ver resumen del pedido activo | `X-Session-Token` |
 
 **`POST /api/pedidos/mesa/1/items`**
@@ -134,7 +134,7 @@ Respuesta `201`:
 }
 ```
 
-Respuesta `200` (vacía). El resumen actualizado se emite por WebSocket.
+Respuesta `201` (vacía). El resumen actualizado se emite por WebSocket.
 
 **`GET /api/pedidos/mesa/1`**
 
@@ -148,7 +148,7 @@ Respuesta `200` (vacía). El resumen actualizado se emite por WebSocket.
       "nombrePlatillo": "Hamburguesa clásica",
       "cantidad": 2,
       "precio": 14000,
-      "subtotal": 28000,
+      "subTotal": 28000,
       "notas": "sin cebolla"
     }
   ],
@@ -159,16 +159,15 @@ Respuesta `200` (vacía). El resumen actualizado se emite por WebSocket.
 
 ### Pagos
 
-| Método | Endpoint | Descripción | Auth |
+| Método | Endpoint | Descripción | Autenticación |
 |--------|----------|-------------|------|
-| `POST` | `/api/pagos` | Procesar un pago | `X-Session-Token` |
+| `POST` | `/api/pagos/mesa/{mesaId}` | Procesar un pago | `X-Session-Token` |
 | `POST` | `/api/pagos/{pagoId}/confirmar` | Confirmar pago QR pendiente | — |
 
-**`POST /api/pagos`**
+**`POST /api/pagos/mesa/1`**
 
 ```json
 {
-  "mesaId": 1,
   "metodo": "TARJETA",
   "tokenProveedor": "tok_visa_4242"
 }
@@ -209,6 +208,9 @@ Todos los errores siguen el formato:
 | `NO_ENCONTRADO` | 404 | Recurso no existe |
 | `CONFLICTO` | 409 | Pedido ya pagado |
 | `ERROR_INTERNO` | 500 | Error inesperado del servidor |
+| `NO_SOPORTADO` | 400 | Método de pago no soportado |
+| `ERROR_QR` | 500 | Error al generar código QR |
+| `VALIDACION` | 400 | Error de validación en los datos enviados |
 
 ## WebSocket
 

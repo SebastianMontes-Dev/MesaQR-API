@@ -17,7 +17,7 @@ public class ControladorQR {
     private final ServicioMesa servicioMesa;
 
     @GetMapping("/mesas/{id}/qr")
-    public ResponseEntity<byte[]> obtenerQR(@PathVariable Long id, HttpServletRequest req) throws Exception {
+    public ResponseEntity<byte[]> obtenerQR(@PathVariable Long id, HttpServletRequest req) {
         var mesa = servicioMesa.buscarPorId(id);
         String baseUrl = req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort();
         byte[] qr = servicioQR.generarQR(mesa.getId(), baseUrl, mesa.getTokenSesion());

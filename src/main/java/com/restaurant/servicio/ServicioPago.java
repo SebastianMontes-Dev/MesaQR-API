@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.restaurant.excepcion.RecursoNoEncontradoException;
 import java.math.BigDecimal;
 
 @Slf4j
@@ -35,6 +36,7 @@ public class ServicioPago {
             case EFECTIVO -> procesarPagoEfectivo(pago, pedido);
             case TARJETA -> procesarPagoTarjeta(pago, pedido, solicitud.getTokenProveedor());
             case TRANSFERENCIA_QR -> procesarPagoTransferenciaQR(pago, pedido);
+            default -> throw new UnsupportedOperationException("Metodo de pago no soportado: " + solicitud.getMetodo());
         };
     }
 
@@ -87,15 +89,15 @@ public class ServicioPago {
     }
 
     @Transactional
-    public void manejarWebhook(String payload, String firma) {
-        log.info("Webhook recibido: firma={}", firma);
+    public void manejarNotificacionExterna(String payload, String firma) {
+        log.info("Notificación externa recibida: firma={}", firma);
         log.debug("Payload: {}", payload);
     }
 
     @Transactional
     public RespuestaPagoDTO confirmarPagoQR(Long pagoId) {
         Pago pago = pagoRepositorio.findById(pagoId)
-                .orElseThrow(() -> new RuntimeException("Pago no encontrado: " + pagoId));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Pago no encontrado: " + pagoId));
 
         pago.setEstado(EstadoPago.COMPLETADO);
         pagoRepositorio.save(pago);

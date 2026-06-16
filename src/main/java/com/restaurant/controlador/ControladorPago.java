@@ -27,12 +27,12 @@ public class ControladorPago {
         return ResponseEntity.ok(servicioPago.procesarPago(mesaId, solicitud));
     }
 
-    @PostMapping("/webhook")
-    public ResponseEntity<Void> webhook(
+    @PostMapping("/notificacion-externa")
+    public ResponseEntity<Void> notificacionExterna(
             @RequestBody String payload,
-            @RequestHeader(value = "Stripe-Signature", required = false) String firma) {
+            @RequestHeader(value = "Firma-Externa", required = false) String firma) {
 
-        servicioPago.manejarWebhook(payload, firma);
+        servicioPago.manejarNotificacionExterna(payload, firma);
         return ResponseEntity.ok().build();
     }
 

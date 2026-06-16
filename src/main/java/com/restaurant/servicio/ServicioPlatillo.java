@@ -1,5 +1,6 @@
 package com.restaurant.servicio;
 
+import com.restaurant.excepcion.RecursoNoEncontradoException;
 import com.restaurant.modelo.Platillo;
 import com.restaurant.repositorio.PlatilloRepositorio;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +20,14 @@ public class ServicioPlatillo {
         return platilloRepositorio.findAllByDisponibleTrue();
     }
 
+    @Transactional(readOnly = true)
     public List<Platillo> obtenerPlatillosPorCategoria(String categoria) {
         return platilloRepositorio.findByCategoria(categoria);
     }
 
+    @Transactional(readOnly = true)
     public Platillo buscarPorId(Long id) {
         return platilloRepositorio.findById(id)
-                .orElseThrow(() -> new RuntimeException("Platillo no encontrado: " + id));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Platillo no encontrado: " + id));
     }
 }

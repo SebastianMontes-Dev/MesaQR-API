@@ -1,0 +1,64 @@
+### Variables
+@baseUrl = http://localhost:8080
+@mesaId = 1
+@token = 6169d447-54d8-4b48-af99-e606f577e0cb
+
+### ────────────────────────────────────
+### 1. CREAR UNA MESA
+### ────────────────────────────────────
+POST {{baseUrl}}/api/mesas
+Content-Type: application/json
+
+{
+  "numeroDeMesa": 5,
+  "capacidad": 4
+}
+
+### ────────────────────────────────────
+### 2. LISTAR TODAS LAS MESAS
+### ────────────────────────────────────
+GET {{baseUrl}}/api/mesas
+
+### ────────────────────────────────────
+### 3. VER DETALLE DE UNA MESA (copia el token de la respuesta)
+### ────────────────────────────────────
+GET {{baseUrl}}/api/mesas/{{mesaId}}
+
+### ────────────────────────────────────
+### 4. VER QR DE LA MESA (abre la imagen en el navegador)
+### ────────────────────────────────────
+GET {{baseUrl}}/api/mesas/{{mesaId}}/qr
+
+### ────────────────────────────────────
+### 5. VER RESUMEN DEL PEDIDO ACTIVO
+### ────────────────────────────────────
+GET {{baseUrl}}/api/pedidos/mesa/{{mesaId}}
+
+### ────────────────────────────────────
+### 6. AGREGAR ITEM AL PEDIDO
+### ────────────────────────────────────
+POST {{baseUrl}}/api/pedidos/mesa/{{mesaId}}/items
+Content-Type: application/json
+X-Session-Token: {{token}}
+
+{
+  "platilloId": 1,
+  "cantidad": 2,
+  "notas": "Sin cebolla"
+}
+
+### ────────────────────────────────────
+### 7. PROCESAR PAGO
+### ────────────────────────────────────
+POST {{baseUrl}}/api/pagos/mesa/{{mesaId}}
+Content-Type: application/json
+X-Session-Token: {{token}}
+
+{
+  "metodo": "EFECTIVO"
+}
+
+### ────────────────────────────────────
+### 8. VER MENU INTERACTIVO (abre en navegador)
+### ────────────────────────────────────
+GET {{baseUrl}}/menu/{{mesaId}}?token={{token}}

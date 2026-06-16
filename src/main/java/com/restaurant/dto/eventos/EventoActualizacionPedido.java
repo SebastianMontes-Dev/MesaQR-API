@@ -9,17 +9,17 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = true)
 public class EventoActualizacionPedido extends EventoMesa {
     private BigDecimal total;
-    private int cantidadItems;
+    private int cantidadElementos;
     private Long pedidoId;
 
     public EventoActualizacionPedido() {
         super();
     }
 
-    public EventoActualizacionPedido(Long mesaId, Integer numeroDeMesa, Long pedidoId, BigDecimal total, int cantidadItems) {
+    public EventoActualizacionPedido(Long mesaId, Integer numeroDeMesa, Long pedidoId, BigDecimal total, int cantidadElementos) {
         super(mesaId, numeroDeMesa);
         this.pedidoId = pedidoId;
         this.total = total;
-        this.cantidadItems = cantidadItems;
+        this.cantidadElementos = cantidadElementos;
     }
 }

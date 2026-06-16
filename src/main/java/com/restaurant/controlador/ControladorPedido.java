@@ -1,10 +1,12 @@
 package com.restaurant.controlador;
 
 import com.restaurant.dto.ResumenPedidoDTO;
-import com.restaurant.dto.SolicitudAgregarItem;
+import com.restaurant.dto.SolicitudAgregarElemento;
 import com.restaurant.servicio.ServicioMesa;
 import com.restaurant.servicio.ServicioPedido;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,14 +28,14 @@ public class ControladorPedido {
     }
 
     @PostMapping("/mesa/{mesaId}/items")
-    public ResponseEntity<Void> agregarItem(
+    public ResponseEntity<Void> agregarElemento(
             @PathVariable Long mesaId,
             @RequestHeader("X-Session-Token") String token,
-            @RequestBody SolicitudAgregarItem solicitud) {
+            @RequestBody @Valid SolicitudAgregarElemento solicitud) {
 
         servicioMesa.validarToken(mesaId, token);
-        servicioPedido.agregarItem(mesaId, solicitud.getPlatilloId(), solicitud.getCantidad(), solicitud.getNotas());
-        return ResponseEntity.ok().build();
+        servicioPedido.agregarElemento(mesaId, solicitud.getPlatilloId(), solicitud.getCantidad(), solicitud.getNotas());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/mesa/{mesaId}")
@@ -43,6 +45,6 @@ public class ControladorPedido {
 
         servicioMesa.validarToken(mesaId, token);
         servicioPedido.crearPedidoParaMesa(mesaId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

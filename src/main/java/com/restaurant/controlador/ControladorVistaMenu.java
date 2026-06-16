@@ -1,6 +1,7 @@
 package com.restaurant.controlador;
 
 import com.restaurant.dto.ResumenPedidoDTO;
+import com.restaurant.excepcion.PedidoYaPagadoException;
 import com.restaurant.servicio.ServicioMesa;
 import com.restaurant.servicio.ServicioPedido;
 import com.restaurant.servicio.ServicioPlatillo;
@@ -24,24 +25,35 @@ public class ControladorVistaMenu {
 
     @GetMapping("/{mesaId}")
     public String vistaMenu(@PathVariable Long mesaId,
-                            @RequestParam String token,
+                            @RequestParam(required = false) String token,
                             Model modelo) {
+
+        modelo.addAttribute("mesaId", mesaId);
+        modelo.addAttribute("nombreRestaurante", nombreRestaurante);
+        modelo.addAttribute("platillos", servicioPlatillo.obtenerPlatillosDisponibles());
+
+        if (token == null || token.isEmpty()) {
+            modelo.addAttribute("tokenFaltante", true);
+            return "menu";
+        }
 
         servicioMesa.validarToken(mesaId, token);
 
         ResumenPedidoDTO resumen;
         try {
             resumen = servicioPedido.obtenerResumenPedido(mesaId);
+        } catch (PedidoYaPagadoException e) {
+            modelo.addAttribute("token", token);
+            modelo.addAttribute("pedidoPagado", true);
+            modelo.addAttribute("mensajeError", e.getMessage());
+            return "menu";
         } catch (RuntimeException e) {
             servicioPedido.crearPedidoParaMesa(mesaId);
             resumen = servicioPedido.obtenerResumenPedido(mesaId);
         }
 
-        modelo.addAttribute("mesaId", mesaId);
         modelo.addAttribute("token", token);
         modelo.addAttribute("resumen", resumen);
-        modelo.addAttribute("nombreRestaurante", nombreRestaurante);
-        modelo.addAttribute("platillos", servicioPlatillo.obtenerPlatillosDisponibles());
 
         return "menu";
     }

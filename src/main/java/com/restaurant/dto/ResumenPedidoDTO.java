@@ -12,7 +12,7 @@ import java.util.List;
 public class ResumenPedidoDTO {
     private Long pedidoId;
     private Integer numeroDeMesa;
-    private List<DetalleItemDTO> detalles;
+    private List<DetalleElementoDTO> detalles;
     private BigDecimal total;
     private EstadoPedido estado;
 }

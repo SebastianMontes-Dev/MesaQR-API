@@ -13,6 +13,5 @@ public class RespuestaPagoDTO {
     private EstadoPago estado;
     private BigDecimal monto;
     private String mensaje;
-    private String secretoCliente;
     private String urlRedireccion;
 }

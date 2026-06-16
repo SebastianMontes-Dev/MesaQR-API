@@ -7,11 +7,11 @@ import java.math.BigDecimal;
 
 @Data
 @Builder
-public class DetalleItemDTO {
+public class DetalleElementoDTO {
     private Long id;
     private String nombrePlatillo;
     private Integer cantidad;
     private BigDecimal precio;
-    private BigDecimal subtotal;
+    private BigDecimal subTotal;
     private String notas;
 }

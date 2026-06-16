@@ -2,6 +2,7 @@ package com.restaurant.servicio;
 
 import com.restaurant.dto.RespuestaMesa;
 import com.restaurant.dto.SolicitudCrearMesa;
+import com.restaurant.excepcion.RecursoNoEncontradoException;
 import com.restaurant.excepcion.TokenInvalidoException;
 import com.restaurant.modelo.EstadoMesa;
 import com.restaurant.modelo.Mesa;
@@ -37,25 +38,23 @@ public class ServicioMesa {
 
         mesaRepositorio.save(mesa);
 
-        mesa.setCodigoQr(baseUrl + "/api/mesas/" + mesa.getId() + "/qr");
-        mesaRepositorio.save(mesa);
-
-        return toRespuesta(mesa);
+        return toRespuesta(mesa, baseUrl);
     }
 
     public List<RespuestaMesa> obtenerTodasLasMesas() {
         return mesaRepositorio.findAll().stream()
-                .map(this::toRespuesta)
+                .map(m -> toRespuesta(m, null))
                 .toList();
     }
 
     public Mesa buscarPorId(Long mesaId) {
         return mesaRepositorio.findById(mesaId)
-                .orElseThrow(() -> new RuntimeException("Mesa no encontrada: " + mesaId));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Mesa no encontrada: " + mesaId));
     }
 
+    @Transactional
     public void validarToken(Long mesaId, String token) {
-        Mesa mesa = mesaRepositorio.findById(mesaId)
+        Mesa mesa = mesaRepositorio.findByIdConBloqueo(mesaId)
                 .orElseThrow(() -> new TokenInvalidoException("Mesa no encontrada"));
 
         if (mesa.getTokenSesion() == null || !mesa.getTokenSesion().equals(token)) {
@@ -69,8 +68,8 @@ public class ServicioMesa {
 
     @Transactional
     public void actualizarEstado(Long mesaId, EstadoMesa nuevoEstado) {
-        Mesa mesa = mesaRepositorio.findById(mesaId)
-                .orElseThrow(() -> new RuntimeException("Mesa no encontrada: " + mesaId));
+        Mesa mesa = mesaRepositorio.findByIdConBloqueo(mesaId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Mesa no encontrada: " + mesaId));
         mesa.setEstado(nuevoEstado);
 
         if (nuevoEstado == EstadoMesa.DISPONIBLE) {
@@ -86,13 +85,21 @@ public class ServicioMesa {
         mesa.setTokenExpiraEn(LocalDateTime.now().plusHours(24));
     }
 
-    private RespuestaMesa toRespuesta(Mesa mesa) {
+    @Transactional(readOnly = true)
+    public boolean existeTokenValido(String token) {
+        return mesaRepositorio.findByTokenSesion(token)
+                .map(m -> m.getTokenExpiraEn() == null || m.getTokenExpiraEn().isAfter(LocalDateTime.now()))
+                .orElse(false);
+    }
+
+    private RespuestaMesa toRespuesta(Mesa mesa, String baseUrl) {
+        String urlQr = baseUrl != null ? baseUrl + "/api/mesas/" + mesa.getId() + "/qr" : null;
         return RespuestaMesa.builder()
                 .id(mesa.getId())
                 .numeroDeMesa(mesa.getNumeroDeMesa())
                 .capacidad(mesa.getCapacidad())
                 .estado(mesa.getEstado().name())
-                .urlQr(mesa.getCodigoQr())
+                .urlQr(urlQr)
                 .build();
     }
 }
