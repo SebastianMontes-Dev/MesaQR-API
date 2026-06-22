@@ -88,10 +88,38 @@ public class ServicioPago {
                 .build();
     }
 
+    @org.springframework.beans.factory.annotation.Value("${restaurant.webhook.secret:secreto_default}")
+    private String webhookSecret;
+
     @Transactional
     public void manejarNotificacionExterna(String payload, String firma) {
         log.info("Notificación externa recibida: firma={}", firma);
-        log.debug("Payload: {}", payload);
+        
+        if (firma == null || firma.isEmpty()) {
+            throw new IllegalArgumentException("Firma de webhook faltante");
+        }
+
+        try {
+            javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
+            javax.crypto.spec.SecretKeySpec secretKeySpec = new javax.crypto.spec.SecretKeySpec(webhookSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8), "HmacSHA256");
+            mac.init(secretKeySpec);
+            byte[] hmacBytes = mac.doFinal(payload.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hmacBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            String firmaCalculada = sb.toString();
+
+            if (!firmaCalculada.equalsIgnoreCase(firma)) {
+                log.error("Firma de webhook inválida. Calculada: {}, Recibida: {}", firmaCalculada, firma);
+                throw new IllegalArgumentException("Firma de webhook inválida");
+            }
+        } catch (java.security.NoSuchAlgorithmException | java.security.InvalidKeyException e) {
+            throw new RuntimeException("Error al calcular HMAC", e);
+        }
+
+        log.debug("Payload validado exitosamente: {}", payload);
     }
 
     @Transactional

@@ -22,6 +22,9 @@ public class ConfiguracionWebSocket implements WebSocketMessageBrokerConfigurer 
 
     private final ServicioMesa servicioMesa;
 
+    @org.springframework.beans.factory.annotation.Value("${restaurant.cors.allowed-origins}")
+    private String[] allowedOrigins;
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
@@ -30,7 +33,7 @@ public class ConfiguracionWebSocket implements WebSocketMessageBrokerConfigurer 
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/ws").setAllowedOriginPatterns(allowedOrigins).withSockJS();
     }
 
     @Override

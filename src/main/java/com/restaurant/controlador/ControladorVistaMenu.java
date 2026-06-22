@@ -26,7 +26,12 @@ public class ControladorVistaMenu {
     @GetMapping("/{mesaId}")
     public String vistaMenu(@PathVariable Long mesaId,
                             @RequestParam(required = false) String token,
+                            @CookieValue(value = "session_token", required = false) String cookieToken,
                             Model modelo) {
+
+        if (token == null && cookieToken != null) {
+            token = cookieToken;
+        }
 
         modelo.addAttribute("mesaId", mesaId);
         modelo.addAttribute("nombreRestaurante", nombreRestaurante);

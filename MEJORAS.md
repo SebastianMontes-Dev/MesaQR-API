@@ -8,12 +8,12 @@
 
 **Objetivo**: que nadie pueda tomar control ajeno ni espiar datos.
 
-- [ ] 1.1 **Quitar token de la URL del QR** — pasarlo como fragment (`#token=...`) para que el servidor no lo loguee ni el navegador lo comparta. Modificar `ServicioQR.java:15` y `menu.html` para leerlo del hash.
-- [ ] 1.2 **Proteger WebSocket** — requerir token vía handshake STOMP. El cliente lo envía como header `X-Session-Token` al conectar, `ConfiguracionWebSocket` lo valida con un `ChannelInterceptor`.
-- [ ] 1.3 **Restringir CORS** — cambiar `setAllowedOriginPatterns("*")` por orígenes específicos en `application.properties` (`restaurant.cors.allowed-origins`).
-- [ ] 1.4 **Verificar firma del webhook** — implementar HMAC-SHA256 en `ServicioPago.manejarWebhook()` usando un secreto configurable.
-- [ ] 1.5 **Externalizar credenciales** — mover `spring.datasource.password` a variable de entorno `${DB_PASSWORD}` con valor default solo para dev.
-- [ ] 1.6 **Agregar rate limiting** — usar Bucket4j o Resilience4j con anotación `@RateLimiter` en endpoints de pago y pedido.
+- [x] 1.1 **Quitar token de la URL del QR** — pasarlo como fragment (`#token=...`) para que el servidor no lo loguee ni el navegador lo comparta. Modificar `ServicioQR.java:15` y `menu.html` para leerlo del hash.
+- [x] 1.2 **Proteger WebSocket** — requerir token vía handshake STOMP. El cliente lo envía como header `X-Session-Token` al conectar, `ConfiguracionWebSocket` lo valida con un `ChannelInterceptor`.
+- [x] 1.3 **Restringir CORS** — cambiar `setAllowedOriginPatterns("*")` por orígenes específicos en `application.properties` (`restaurant.cors.allowed-origins`).
+- [x] 1.4 **Verificar firma del webhook** — implementar HMAC-SHA256 en `ServicioPago.manejarWebhook()` usando un secreto configurable.
+- [x] 1.5 **Externalizar credenciales** — mover `spring.datasource.password` a variable de entorno `${DB_PASSWORD}` con valor default solo para dev.
+- [x] 1.6 **Agregar rate limiting** — usar Bucket4j o Resilience4j con anotación `@RateLimiter` en endpoints de pago y pedido.
 
 ---
 
@@ -82,10 +82,10 @@
 
 | Sprint | Área | Estado | Completado |
 |--------|------|--------|------------|
-| 1 | Seguridad | ⬜ Pendiente | 0/6 |
+| 1 | Seguridad | ✅ Completado | 6/6 |
 | 2 | Lógica de negocio | ⬜ Pendiente | 0/6 |
 | 3 | Validación y robustez | ⬜ Pendiente | 0/4 |
 | 4 | Arquitectura y código | ⬜ Pendiente | 0/6 |
 | 5 | Testing, DevOps y observabilidad | ⬜ Pendiente | 0/10 |
 
-**Total**: 0/28 — 0%
+**Total**: 6/28 — 21%

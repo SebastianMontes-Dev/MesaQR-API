@@ -8,10 +8,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 
 @RestController
 @RequestMapping("/api/pagos")
 @RequiredArgsConstructor
+@RateLimiter(name = "pago")
 public class ControladorPago {
 
     private final ServicioPago servicioPago;

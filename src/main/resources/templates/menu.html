@@ -55,7 +55,9 @@
         (function() {
             var hash = window.location.hash;
             if (hash && hash.indexOf('token=') !== -1) {
-                window.location.replace(window.location.pathname + '?' + hash.substring(1));
+                var tokenVal = hash.substring(hash.indexOf('token=') + 6);
+                document.cookie = "session_token=" + tokenVal + "; path=/; max-age=86400";
+                window.location.reload();
             }
         })();
     </script>
