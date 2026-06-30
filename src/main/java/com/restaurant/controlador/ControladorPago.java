@@ -42,4 +42,9 @@ public class ControladorPago {
     public ResponseEntity<RespuestaPagoDTO> confirmarPagoQR(@PathVariable Long pagoId) {
         return ResponseEntity.ok(servicioPago.confirmarPagoQR(pagoId));
     }
+
+    @PostMapping("/{pagoId}/confirmar-efectivo")
+    public ResponseEntity<RespuestaPagoDTO> confirmarPagoEfectivo(@PathVariable Long pagoId) {
+        return ResponseEntity.ok(servicioPago.confirmarPagoEfectivo(pagoId));
+    }
 }

@@ -73,7 +73,7 @@ public class ServicioPedido {
     public Pedido crearPedidoParaMesa(Long mesaId) {
         Optional<Pedido> existente = pedidoRepositorio.findActivoByMesaId(mesaId);
         if (existente.isPresent()) {
-            return existente.get();
+            throw new IllegalArgumentException("La mesa " + mesaId + " ya tiene un pedido ABIERTO");
         }
 
         Mesa mesa = servicioMesa.buscarPorId(mesaId);
@@ -111,7 +111,13 @@ public class ServicioPedido {
 
     public Pedido obtenerPedidoActivo(Long mesaId) {
         return pedidoRepositorio.findActivoByMesaId(mesaId)
-                .orElseThrow(() -> new PedidoYaPagadoException("El pedido de la mesa " + mesaId + " ya fue pagado o no existe"));
+                .orElseThrow(() -> {
+                    Optional<Pedido> ultimo = pedidoRepositorio.findFirstByMesaIdOrderByIdDesc(mesaId);
+                    if (ultimo.isPresent() && ultimo.get().getEstado() != EstadoPedido.ABIERTO) {
+                        return new PedidoYaPagadoException("El pedido de la mesa " + mesaId + " ya fue pagado o cerrado");
+                    }
+                    return new RecursoNoEncontradoException("No existe pedido para la mesa " + mesaId);
+                });
     }
 
     public BigDecimal obtenerTotalPedido(Long pedidoId) {

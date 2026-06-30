@@ -21,9 +21,9 @@
 
 **Objetivo**: que los flujos no tengan agujeros semánticos.
 
-- [ ] 2.1 **Evitar pedidos duplicados** — agregar validación en `ServicioPedido.crearPedidoParaMesa()` que revise si ya existe un pedido ABIERTO para esa mesa.
-- [ ] 2.2 **Confirmación de pago en efectivo** — el pago en efectivo queda `PENDIENTE` igual que QR, y solo el mesero (o admin) lo confirma con un endpoint `/api/pagos/{id}/confirmar-efectivo`.
-- [ ] 2.3 **Activar `PedidoYaPagadoException`** — lanzarla en `obtenerPedidoActivo` cuando el pedido existe pero no está ABIERTO.
+- [x] 2.1 **Evitar pedidos duplicados** — agregar validación en `ServicioPedido.crearPedidoParaMesa()` que revise si ya existe un pedido ABIERTO para esa mesa.
+- [x] 2.2 **Confirmación de pago en efectivo** — el pago en efectivo queda `PENDIENTE` igual que QR, y solo el mesero (o admin) lo confirma con un endpoint `/api/pagos/{id}/confirmar-efectivo`.
+- [x] 2.3 **Activar `PedidoYaPagadoException`** — lanzarla en `obtenerPedidoActivo` cuando el pedido existe pero no está ABIERTO.
 - [ ] 2.4 **Agregar cálculo de IVA y propina** — sumar 16% IVA o 10% servicio según configuración del restaurante en `application.properties`.
 - [ ] 2.5 **Endpoint cancelar pedido** — `PUT /api/pedidos/mesa/{mesaId}/cancelar` que pase el pedido a CANCELADO y libere la mesa.
 - [ ] 2.6 **Implementar reservas o eliminar `RESERVADA`** — si se quiere funcional, `PUT /api/mesas/{id}/reservar` + `PUT /api/mesas/{id}/liberar`.
@@ -83,9 +83,9 @@
 | Sprint | Área | Estado | Completado |
 |--------|------|--------|------------|
 | 1 | Seguridad | ✅ Completado | 6/6 |
-| 2 | Lógica de negocio | ⬜ Pendiente | 0/6 |
+| 2 | Lógica de negocio | 🔄 En progreso | 3/6 |
 | 3 | Validación y robustez | ⬜ Pendiente | 0/4 |
 | 4 | Arquitectura y código | ⬜ Pendiente | 0/6 |
 | 5 | Testing, DevOps y observabilidad | ⬜ Pendiente | 0/10 |
 
-**Total**: 6/28 — 21%
+**Total**: 9/28 — 32%

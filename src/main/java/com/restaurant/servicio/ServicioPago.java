@@ -41,19 +41,17 @@ public class ServicioPago {
     }
 
     private RespuestaPagoDTO procesarPagoEfectivo(Pago pago, Pedido pedido) {
-        pago.setEstado(EstadoPago.COMPLETADO);
+        pago.setEstado(EstadoPago.PENDIENTE);
         pagoRepositorio.save(pago);
 
-        servicioPedido.marcarComoPagado(pedido.getMesa().getId());
-
-        log.info("Pago en efectivo completado: mesa {} - ${}",
+        log.info("Pago en efectivo solicitado: mesa {} - ${}",
                 pedido.getMesa().getNumeroDeMesa(), pago.getMonto());
 
         return RespuestaPagoDTO.builder()
                 .pagoId(pago.getId())
-                .estado(EstadoPago.COMPLETADO)
+                .estado(EstadoPago.PENDIENTE)
                 .monto(pago.getMonto())
-                .mensaje("Pago en efectivo registrado")
+                .mensaje("Pago en efectivo solicitado, a la espera de confirmación")
                 .build();
     }
 
@@ -139,6 +137,30 @@ public class ServicioPago {
                 .estado(EstadoPago.COMPLETADO)
                 .monto(pago.getMonto())
                 .mensaje("Pago confirmado exitosamente")
+                .build();
+    }
+
+    @Transactional
+    public RespuestaPagoDTO confirmarPagoEfectivo(Long pagoId) {
+        Pago pago = pagoRepositorio.findById(pagoId)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Pago no encontrado: " + pagoId));
+
+        if (pago.getMetodo() != com.restaurant.modelo.MetodoPago.EFECTIVO) {
+            throw new IllegalArgumentException("El pago no es en efectivo");
+        }
+
+        pago.setEstado(EstadoPago.COMPLETADO);
+        pagoRepositorio.save(pago);
+
+        servicioPedido.marcarComoPagado(pago.getPedido().getMesa().getId());
+
+        log.info("Pago en efectivo confirmado: ${}", pago.getMonto());
+
+        return RespuestaPagoDTO.builder()
+                .pagoId(pago.getId())
+                .estado(EstadoPago.COMPLETADO)
+                .monto(pago.getMonto())
+                .mensaje("Pago en efectivo confirmado exitosamente")
                 .build();
     }
 }
